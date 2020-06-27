@@ -1,0 +1,1591 @@
+---------------------anasayfa--------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace hammaddeUretim
+{
+    public partial class Anasayfa : Form
+    {
+        public Anasayfa()
+        {
+            InitializeComponent();
+        }
+        Form1 tedarikci = new Form1();
+        uretici uretim = new uretici();
+        musteri mus = new musteri();
+        private void button1_Click(object sender, EventArgs e)
+        {
+            tedarikci = new Form1();
+            tedarikci.Show();
+            uretim.Close();
+            mus.Close();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            uretim = new uretici();
+            uretim.Show();
+            tedarikci.Close();
+            mus.Close();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            mus = new musteri();
+            mus.Show();
+            uretim.Close();
+            tedarikci.Close();
+
+        }
+
+        private void Anasayfa_Load(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
+----------------------------------------------------------------------------------------------------
+---------------------------form1--------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace hammaddeUretim
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+        SqlConnection baglanti = new SqlConnection("Data Source=.; initial Catalog=ureticiVT; Integrated Security=true");
+        SqlCommand komut=new SqlCommand();
+        SqlDataReader oku;
+        private void btnKaydet_Click(object sender, EventArgs e)
+        {
+            string tekrarfirmaAdi = dataGridView1.CurrentRow.Cells[1].Value.ToString();
+            string tekrarHammadde = dataGridView1.CurrentRow.Cells[4].Value.ToString();
+
+            baglanti.Open();
+            if (comboBox1.Text != "")
+            {
+                if (tekrarfirmaAdi != comboBox1.Text || tekrarHammadde != textBox4.Text)
+                {
+                    if (textBox4.Text != "" && textBox5.Text != "" && textBox6.Text != "" && textBox7.Text != "" && textBox8.Text != "")
+                    {
+                        try
+                        {
+
+                            string sorgu = "INSERT INTO hammadde(hammaddeAdi,hammaddeMiktari,uretimTarihi,rafOmru,satisFiyati,firmaID) values (@1,@2,@3,@4,@5,@6)";
+                            komut = new SqlCommand(sorgu, baglanti);
+                            komut.Parameters.AddWithValue("@1", textBox4.Text);
+                            komut.Parameters.AddWithValue("@2", textBox5.Text);
+                            komut.Parameters.AddWithValue("@3", textBox6.Text);
+                            komut.Parameters.AddWithValue("@4", textBox7.Text);
+                            komut.Parameters.AddWithValue("@5", textBox8.Text);
+                            komut.Parameters.AddWithValue("@6", textBox1.Text);
+                            komut.ExecuteNonQuery();
+                            doldur();
+                            MessageBox.Show("Ýþlem Baþarýyla Gerçekleþtirildi.");
+                        }
+                        catch (Exception ex)
+                        {
+
+                            MessageBox.Show("Hata !" + ex.Message);
+                        }
+
+
+                    }
+                    else
+                        MessageBox.Show("Boþ geçilmemesi gereken Alanlar var!! Tekrar Deneyin.");
+                }
+                else
+                    MessageBox.Show("Seçilen Firmaya ait ayný Hammadde var ekleme Yapamazsýnýz Lütfen güncelleme yapýn.");
+
+               
+            }
+            else
+                MessageBox.Show("Firma yý Boþ geçemezsiniz !! Lütfen Firmayý seçin.");
+
+               
+        
+
+            baglanti.Close();
+        }
+
+        void doldur()
+        {
+            
+            string sorgu = "select hammaddeID,firmaAdi,ulke,sehir,hammaddeAdi,hammaddeMiktari,uretimTarihi,rafOmru,satisFiyati from firma inner join hammadde on firma.firmaID=hammadde.firmaID order by satisFiyati";
+            SqlDataAdapter da = new SqlDataAdapter(sorgu, baglanti);
+            DataTable ds = new DataTable();
+            da.Fill(ds);
+            dataGridView1.DataSource = ds;
+        }
+
+       
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+           
+            komut.Connection = baglanti;
+            baglanti.Open();
+            komut.CommandText = "select distinct(firmaAdi) from firma";
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                comboBox1.Items.Add(oku[0].ToString());
+            }
+            oku.Close();
+            baglanti.Close();
+            doldur();          
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+                     
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            baglanti.Open();
+            komut.Connection = baglanti;
+            komut.CommandText = "select firmaID from firma where firmaAdi = '" + comboBox1.Text + "' ";
+
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                textBox1.Text = oku[0].ToString();
+            }
+            oku.Close();
+            baglanti.Close();
+
+        }
+        firmaEkle firma;
+        
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            firma = new firmaEkle();
+            firma.Show();
+
+        }
+
+        private void dataGridView1_Click(object sender, EventArgs e)
+        {
+            comboBox1.Text= dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[1].Value.ToString();
+            textBox4.Text = dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[4].Value.ToString();
+            textBox5.Text = dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[5].Value.ToString();
+            textBox6.Text = dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[6].Value.ToString();
+            textBox7.Text = dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[7].Value.ToString();
+            textBox8.Text = dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[8].Value.ToString();
+           
+        }
+
+        private void btnGuncelle_Click(object sender, EventArgs e)
+        {
+            baglanti.Open();
+
+
+            try
+            {
+                DialogResult guncelle;
+                guncelle = MessageBox.Show("Hammadde Bilgilerinizi Güncellemek Ýstediðinizden Eminmisiniz", "Uyarý ?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (guncelle == DialogResult.Yes && dataGridView1.CurrentRow.Cells[0].Value.ToString().Trim() != "")
+                {
+                    string satirGuncelle = dataGridView1.CurrentRow.Cells[0].Value.ToString();
+
+                    string sorgu = "Update hammadde set hammaddeAdi=@1,hammaddeMiktari=@2,uretimTarihi=@3,rafOmru=@4,satisFiyati=@5 where hammaddeID= " + satirGuncelle + " ";
+
+                    komut = new SqlCommand(sorgu, baglanti);
+                    komut.Parameters.AddWithValue("@1", textBox4.Text);
+                    komut.Parameters.AddWithValue("@2", textBox5.Text);
+                    komut.Parameters.AddWithValue("@3", textBox6.Text);
+                    komut.Parameters.AddWithValue("@4", textBox7.Text);
+                    komut.Parameters.AddWithValue("@5", textBox8.Text);
+                    komut.ExecuteNonQuery();
+                    doldur();
+                    MessageBox.Show(" Hammadde Bilgileri Baþarý Ýle Güncellendi.");
+
+
+                }
+                else
+                {
+                    MessageBox.Show("Güncelleme Ýþlemi Ýptal Edildi ");
+                }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("Güncelleme Hatasý" + ex.Message);
+            }
+
+            baglanti.Close();
+        }
+
+        private void btnTemizle_Click(object sender, EventArgs e)
+        {
+           
+            textBox4.Text = "";
+            textBox5.Text = "";
+            textBox6.Text = "";
+            textBox7.Text = "";
+            textBox8.Text = "";
+
+        }
+
+        private void btnSil_Click(object sender, EventArgs e)
+        {
+            baglanti.Open();
+
+            DialogResult sil;
+            sil = MessageBox.Show("Hammadde bilgileri Silinecektir Silmek istediðinizden Eminmisiniz ?", "Uyarý", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (sil == DialogResult.Yes && dataGridView1.CurrentRow.Cells[0].Value.ToString().Trim() != "")
+            {
+                string satirSil = dataGridView1.CurrentRow.Cells[0].Value.ToString();
+                string sorgu = "delete from hammadde where hammaddeID=" + satirSil + " ";
+                komut = new SqlCommand(sorgu, baglanti);
+                komut.ExecuteNonQuery();
+                doldur();
+                MessageBox.Show("Hammadde bilgileri Baþarý Ýle Silindi.");
+
+            }
+            else
+            {
+                MessageBox.Show("Silme Ýþlemi Ýptal edildi.");
+            }
+            baglanti.Close();
+        }
+
+        private void comboBox2_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+           
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            textBox4.Text = textBox4.Text.ToUpper();
+            textBox4.SelectionStart = textBox4.Text.Length;
+        }
+    }
+}
+
+---------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------firmaekle-----------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace hammaddeUretim
+{
+    public partial class firmaEkle : Form
+    {
+        public firmaEkle()
+        {
+            InitializeComponent();
+        }
+        SqlConnection baglanti = new SqlConnection("Data Source=.; initial Catalog=ureticiVT; Integrated Security=true");
+        SqlCommand komut;
+        Form1 yeniTedarik;
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string tekrarfirmaAdi = dataGridView1.CurrentRow.Cells[1].Value.ToString();
+            string tekrarUlke = dataGridView1.CurrentRow.Cells[2].Value.ToString();
+            string tekrarSehir = dataGridView1.CurrentRow.Cells[3].Value.ToString();
+
+            baglanti.Open();
+            if (tekrarfirmaAdi != textBox1.Text || tekrarUlke != textBox2.Text || tekrarSehir != textBox3.Text)
+            {
+                if (textBox1.Text != "" || textBox2.Text != "" || textBox3.Text != "")
+                {
+                    try
+                    {
+                        string firmaSorgu = "INSERT INTO firma(firmaAdi,ulke,sehir,kargoID) values (@1,@2,@3,@4)";
+                        komut = new SqlCommand(firmaSorgu, baglanti);
+                        komut.Parameters.AddWithValue("@1", textBox1.Text);
+                        komut.Parameters.AddWithValue("@2", textBox2.Text);
+                        komut.Parameters.AddWithValue("@3", textBox3.Text);
+                        if (textBox2.Text == "Türkiye") komut.Parameters.AddWithValue("@4", "1");
+                        else komut.Parameters.AddWithValue("@4", "2");
+                        komut.ExecuteNonQuery();
+                        firmaDoldur();
+                        MessageBox.Show("Firma Baþarýyla Eklendi.");
+
+                    }
+                    catch (Exception ex)
+                    {
+
+                        MessageBox.Show(ex.Message);
+                    }
+                }
+            }
+            else
+                MessageBox.Show("Ayný firmadan var!! Tekrar deneyin.");
+          
+            baglanti.Close();
+
+            this.Close();
+            yeniTedarik = new Form1();
+            yeniTedarik.Show();
+
+        }
+
+      public void firmaDoldur()
+        {
+            string dgvsorgu = "Select firmaID,firmaAdi,ulke,sehir from firma";
+            SqlDataAdapter da = new SqlDataAdapter(dgvsorgu, baglanti);
+            DataSet ds = new DataSet();
+            da.Fill(ds, "firma");
+            dataGridView1.DataSource = ds.Tables[0];
+
+            
+
+        }
+
+        private void firmaEkle_Load(object sender, EventArgs e)
+        {
+            
+            firmaDoldur();
+        }
+
+        private void dataGridView1_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[1].Value.ToString();
+            textBox2.Text = dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[2].Value.ToString();
+            textBox3.Text = dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[3].Value.ToString();
+           
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            baglanti.Open();
+
+
+            try
+            {
+                DialogResult guncelle;
+                guncelle = MessageBox.Show("Firma Bilgilerinizi Güncellemek Ýstediðinizden Eminmisiniz", "Uyarý ?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (guncelle == DialogResult.Yes && dataGridView1.CurrentRow.Cells[0].Value.ToString().Trim() != "")
+                {
+                    string satirGuncelle = dataGridView1.CurrentRow.Cells[0].Value.ToString();
+
+                    string sorgu = "Update firma set firmaAdi=@1,ulke=@2,sehir=@3,kargoID=@4 where firmaID= " + satirGuncelle + " ";
+
+                    komut = new SqlCommand(sorgu, baglanti);
+                    komut.Parameters.AddWithValue("@1", textBox1.Text);
+                    komut.Parameters.AddWithValue("@2", textBox2.Text);
+                    komut.Parameters.AddWithValue("@3", textBox3.Text);
+                    if (textBox2.Text == "Türkiye") komut.Parameters.AddWithValue("@4", "1");
+                    else komut.Parameters.AddWithValue("@4", "2");
+
+                    komut.ExecuteNonQuery();
+                    firmaDoldur();
+                    MessageBox.Show(" Firma Bilgileri Baþarý Ýle Güncellendi.");
+
+
+                }
+                else
+                {
+                    MessageBox.Show("Güncelleme Ýþlemi Ýptal Edildi ");
+                }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("Güncelleme Hatasý" + ex.Message);
+            }
+
+            baglanti.Close();
+
+            this.Close();
+            yeniTedarik = new Form1();
+            yeniTedarik.Show();
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            baglanti.Open();
+
+            DialogResult sil;
+            sil = MessageBox.Show("Firma Silinecektir Silmek istediðinizden Eminmisiniz ?", "Uyarý", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (sil == DialogResult.Yes && dataGridView1.CurrentRow.Cells[0].Value.ToString().Trim() != "")
+            {
+                string satirSil = dataGridView1.CurrentRow.Cells[0].Value.ToString();
+                string sorgu = "delete from firma where firmaID=" + satirSil + " ";
+                komut = new SqlCommand(sorgu, baglanti);
+                komut.ExecuteNonQuery();
+                firmaDoldur();
+                MessageBox.Show("Firma Baþarý Ýle Silindi.");
+
+            }
+            else
+            {
+                MessageBox.Show("Silme Ýþlemi Ýptal edildi.");
+            }
+            baglanti.Close();
+
+            this.Close();
+            yeniTedarik = new Form1();
+            yeniTedarik.Show();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            yeniTedarik = new Form1();
+            yeniTedarik.Show();
+        }
+    }
+}
+------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------hammaddealis--------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+using System.Collections;
+
+namespace hammaddeUretim
+{
+    public partial class hammaddeAlis : Form
+    {
+        public hammaddeAlis()
+        {
+            InitializeComponent();
+        }
+        SqlConnection baglanti = new SqlConnection("Data Source=.; initial Catalog=ureticiVT; Integrated Security=true");
+        SqlCommand komut = new SqlCommand();
+        SqlDataReader oku;
+        string[] geciciHammaddeAdi=new string[20];
+        string geciciHammaddeMiktari;
+        string geciciID;
+        string geciciFiyat;
+        private void button1_Click(object sender, EventArgs e)
+        {
+             
+              int i = 0,k=0;
+        string tempHammaddeMiktari = "";
+
+            baglanti.Open();
+
+            komut.Connection = baglanti;
+            komut.CommandText = "select hammaddeMiktari from hammadde where hammaddeID = '" + uretici.id + "' ";
+
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                tempHammaddeMiktari = oku[0].ToString();
+            }
+            oku.Close();
+            baglanti.Close();
+
+            baglanti.Open();
+            komut.Connection = baglanti;
+            komut.CommandText = "select stokHammaddeAdi from ureticiStok";
+
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                geciciHammaddeAdi[i] = oku[0].ToString();
+                i++;
+            }
+            oku.Close();
+            baglanti.Close();
+
+            baglanti.Open();
+
+            komut.Connection = baglanti;
+            komut.CommandText = "select stokHammaddeMiktari from ureticiStok where stokHammaddeAdi= '" + uretici.geciciHammaddeAdi + "'";
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                geciciHammaddeMiktari = oku[0].ToString();
+
+            }
+            oku.Close();
+            baglanti.Close();
+
+
+            baglanti.Open();
+            komut.Connection = baglanti;
+            komut.CommandText = "select stokID from ureticiStok where stokHammaddeAdi= '" + uretici.geciciHammaddeAdi + "'";
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                geciciID = oku[0].ToString();
+
+            }
+            oku.Close();
+            baglanti.Close();
+
+            baglanti.Open();
+            komut.Connection = baglanti;
+            komut.CommandText = "select topAlisFiyati from ureticiStok where stokHammaddeAdi= '" + uretici.geciciHammaddeAdi + "'";
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                geciciFiyat = oku[0].ToString();
+
+            }
+            oku.Close();
+            baglanti.Close();
+
+
+            baglanti.Open();
+
+            if (Convert.ToInt32(textBox1.Text) <= int.Parse(uretici.stokHammaddeMiktari))
+            {
+                try
+                {
+                    DialogResult guncelle;
+                    guncelle = MessageBox.Show("Satýn Almak Ýstediðinizden Eminmisiniz", "Uyarý ?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (guncelle == DialogResult.Yes && uretici.id != "")
+                    {
+                        string satirGuncelle = uretici.id;
+
+                        string sorgu = "Update hammadde set hammaddeMiktari=@1 where hammaddeID= " + satirGuncelle + " ";
+
+                        komut = new SqlCommand(sorgu, baglanti);
+                        komut.Parameters.AddWithValue("@1", (int.Parse(tempHammaddeMiktari) - (Convert.ToInt32(textBox1.Text))).ToString());
+                        komut.ExecuteNonQuery();
+                        dgvDoldur();
+
+
+                        string firmaSorgu = "INSERT INTO sepet(firmaID,hammaddeID,alisMaliyeti,stokDurumu) values (@1,@2,@3,@4)";
+                        komut = new SqlCommand(firmaSorgu, baglanti);
+                        komut.Parameters.AddWithValue("@1", uretici.tempFirmaid);
+                        komut.Parameters.AddWithValue("@2", uretici.id);
+                        komut.Parameters.AddWithValue("@3", (((Convert.ToInt32(textBox1.Text) * Convert.ToInt32(uretici.temphammaddeSatis)) + Convert.ToInt32(uretici.kargoFiyati)).ToString()));
+                        komut.Parameters.AddWithValue("@4", textBox1.Text);
+                        komut.ExecuteNonQuery();
+
+                        MessageBox.Show("Hammadde Baþarýyla Alýndý.");
+
+                      
+                        for (int j = 0; j < i + 1; j++)
+                        {
+                            if (geciciHammaddeAdi[j] == uretici.geciciHammaddeAdi)
+                            {
+                                k++;
+
+                                string satirGuncelle2 = uretici.geciciHammaddeAdi;
+
+                                string sorgu2 = "Update ureticiStok set stokHammaddeMiktari=@1,topAlisFiyati=@2,ortalamaAlisFiyati=@3 where stokID= " + geciciID + " ";
+                              
+                                komut = new SqlCommand(sorgu2, baglanti);
+                                komut.Parameters.AddWithValue("@1", (int.Parse(geciciHammaddeMiktari) + (Convert.ToInt32(textBox1.Text))).ToString());
+                                komut.Parameters.AddWithValue("@2", (int.Parse(geciciFiyat) + ((Convert.ToInt32(textBox1.Text) * Convert.ToInt32(uretici.temphammaddeSatis)) + Convert.ToInt32(uretici.kargoFiyati))).ToString());
+                                komut.Parameters.AddWithValue("@3", ((((Convert.ToInt32(textBox1.Text) * Convert.ToInt32(uretici.temphammaddeSatis)) + Convert.ToInt32(uretici.kargoFiyati))) /  (Convert.ToInt32(textBox1.Text))).ToString());
+                                komut.ExecuteNonQuery();
+                                break;
+                               
+                            }
+                        }
+                        for (int j = 0; j < i + 1; j++)
+                        {
+                            if (geciciHammaddeAdi[j] != uretici.geciciHammaddeAdi && k==0)
+                            {
+
+                                string stokSorgu = "INSERT INTO ureticiStok(stokHammaddeAdi,stokHammaddeMiktari,topAlisFiyati,ortalamaAlisFiyati) values (@1,@2,@3,@4)";
+                                komut = new SqlCommand(stokSorgu, baglanti);
+                                komut.Parameters.AddWithValue("@1", uretici.geciciHammaddeAdi);
+                                komut.Parameters.AddWithValue("@2", textBox1.Text);
+                                komut.Parameters.AddWithValue("@3", (((Convert.ToInt32(textBox1.Text) * Convert.ToInt32(uretici.temphammaddeSatis)) + Convert.ToInt32(uretici.kargoFiyati)).ToString()));
+                                komut.Parameters.AddWithValue("@4", ((((Convert.ToInt32(textBox1.Text) * Convert.ToInt32(uretici.temphammaddeSatis)) + Convert.ToInt32(uretici.kargoFiyati)) / Convert.ToInt32(textBox1.Text)).ToString()));
+                                komut.ExecuteNonQuery();
+                                break;
+
+                            }
+                        }
+                           
+                           
+                        
+
+
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Ýþlemi Ýptal Edildi ");
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show("Hata!" + ex.Message);
+                }
+            }
+            else
+                MessageBox.Show("Stokta Yeterli kadar Ürün Yok!!");
+          
+
+            baglanti.Close();
+            this.Close();
+
+
+        }
+
+
+        public void dgvDoldur()
+        {
+
+            string sorgu = "select firmaAdi,ulke,sehir,hammaddeAdi,hammaddeMiktari,uretimTarihi,rafOmru,satisFiyati from firma inner join hammadde on firma.firmaID=hammadde.firmaID order by satisFiyati";
+            SqlDataAdapter da = new SqlDataAdapter(sorgu, baglanti);
+            DataTable ds = new DataTable();
+            da.Fill(ds);
+            uretici f2 = (uretici)Application.OpenForms["uretici"];
+            f2.dataGridView1.DataSource = ds;
+        }
+
+        private void hammaddeAlis_FormClosed(object sender, FormClosedEventArgs e)
+        {
+        
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+       
+
+        private void hammaddeAlis_Load(object sender, EventArgs e)
+        {
+          
+        }
+
+
+    }
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------musteri-----------------------------------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace hammaddeUretim
+{
+   
+    public partial class musteri : Form
+    {
+        SqlConnection baglanti = new SqlConnection("Data Source=.; initial Catalog=ureticiVT; Integrated Security=true");
+
+        SqlCommand komut = new SqlCommand();
+        SqlCommand komut2 = new SqlCommand();
+        SqlDataReader oku;
+        public musteri()
+        {
+            InitializeComponent();
+        }
+
+        private void musteri_Load(object sender, EventArgs e)
+        {
+           
+            komut.Connection = baglanti;
+            baglanti.Open();
+            komut.CommandText = "select distinct urunAdi from uretilenUrunler";
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                comboBox1.Items.Add(oku[0].ToString());
+            }
+            oku.Close();
+            baglanti.Close();
+
+            doldur();
+            doldur2();
+            comboBox1.SelectedIndex = 0;
+
+        }
+        void doldur()
+        {
+
+            string sorgu = "select urunID,urunAdi,bilesenleri,uretimTarihi,rafOmru,satisFiyati from uretilenUrunler";
+            SqlDataAdapter da = new SqlDataAdapter(sorgu, baglanti);
+            DataTable ds = new DataTable();
+            da.Fill(ds);
+            dataGridView1.DataSource = ds;
+        }
+
+
+        void doldur2()
+        {
+
+            string sorgu = "select musteriAdi,adres,urunAdi,bilesen,uretimTarihi,rafOmru,satisFiyati from musteri ";
+            SqlDataAdapter da = new SqlDataAdapter(sorgu, baglanti);
+            DataTable ds = new DataTable();
+            da.Fill(ds);
+            dataGridView2.DataSource = ds;
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+           
+    
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string urun = "",bilesen="",iscilik="",maliyet="",satisfiyat="",rafomru="",uretimTarihi="";
+
+            komut.Connection = baglanti;
+            baglanti.Open();
+            komut.CommandText = "select urunAdi,bilesenleri,iscilikMaliyeti,topMaliyet,satisFiyati,uretimTarihi,rafOmru from uretilenUrunler where urunID = '" + dataGridView1.CurrentRow.Cells[0].Value.ToString() + "'";
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                urun=oku[0].ToString();
+                bilesen = oku[1].ToString();
+                iscilik = oku[2].ToString();
+                maliyet = oku[3].ToString();
+                satisfiyat = oku[4].ToString();
+                uretimTarihi= oku[5].ToString();
+                rafomru = oku[6].ToString();
+            }
+            oku.Close();
+            baglanti.Close();
+
+            // MessageBox.Show(urun + " " + bilesen + " " + iscilik + " " + maliyet + " " + satisfiyat);
+
+
+            if (textBox1.Text != "" && textBox2.Text != "")
+            {
+                DialogResult sil;
+                sil = MessageBox.Show("Ürünü Almak istediðinizden Eminmisiniz ?", "Uyarý", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (sil == DialogResult.Yes && dataGridView1.CurrentRow.Cells[0].Value.ToString().Trim() != "")
+                {
+
+                    baglanti.Open();
+                    string Sorgu = "INSERT INTO musteri(musteriAdi,adres,urunAdi,bilesen,uretimTarihi,rafOmru,satisFiyati) values (@1,@2,@3,@4,@5,@6,@7)";
+                    komut2 = new SqlCommand(Sorgu, baglanti);
+                    komut2.Parameters.AddWithValue("@1", textBox1.Text);
+                    komut2.Parameters.AddWithValue("@2", textBox2.Text);
+                    komut2.Parameters.AddWithValue("@3", urun);
+                    komut2.Parameters.AddWithValue("@4", bilesen);
+                    komut2.Parameters.AddWithValue("@5", uretimTarihi);
+                    komut2.Parameters.AddWithValue("@6", rafomru);
+                    komut2.Parameters.AddWithValue("@7", satisfiyat);
+                    komut2.ExecuteNonQuery();
+                    MessageBox.Show("Ürün Baþarýyla Alýndý.");
+                    doldur2();
+                    baglanti.Close();
+
+
+                    baglanti.Open();
+                    string satirSil = dataGridView1.CurrentRow.Cells[0].Value.ToString();
+                    string sorgu = "delete from uretilenUrunler where urunID=" + satirSil + " ";
+                    komut = new SqlCommand(sorgu, baglanti);
+                    komut.ExecuteNonQuery();
+                    doldur();
+                    baglanti.Close();
+
+
+                    baglanti.Open();
+                    string Sorgu2 = "INSERT INTO karTablosu(satilanUrun,satilanBilesen,iscilik,toplamMaliyet,satisFiyati,satisKari) values (@1,@2,@3,@4,@5,@6)";
+                    komut2 = new SqlCommand(Sorgu2, baglanti);
+                    komut2.Parameters.AddWithValue("@1", urun);
+                    komut2.Parameters.AddWithValue("@2", bilesen);
+                    komut2.Parameters.AddWithValue("@3", iscilik);
+                    komut2.Parameters.AddWithValue("@4", maliyet);
+                    komut2.Parameters.AddWithValue("@5", satisfiyat);
+                    komut2.Parameters.AddWithValue("@6", ((Convert.ToInt32(satisfiyat) +Convert.ToInt32(iscilik)) - Convert.ToInt32(maliyet)));
+                    komut2.ExecuteNonQuery();                   
+                    baglanti.Close();
+
+
+
+                }
+                else
+                {
+                    MessageBox.Show("Ýþlem Ýptal edildi.");
+                }
+            }
+            else MessageBox.Show("Boþ geçilmemesi gereken Alanlar var.");
+
+
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            SqlDataAdapter da;
+
+            if(comboBox1.Text == "HEPSÝ")
+            {
+                da = new SqlDataAdapter("select urunID,urunAdi,bilesenleri,uretimTarihi,rafOmru,satisFiyati from uretilenUrunler ", baglanti);
+            }
+            else
+            {
+                da = new SqlDataAdapter("select urunID,urunAdi,bilesenleri,uretimTarihi,rafOmru,satisFiyati from uretilenUrunler where urunAdi in ('" + comboBox1.Text + "') ", baglanti);
+            }
+           
+            DataTable dt = new DataTable();
+            baglanti.Open();
+            da.Fill(dt);
+            dataGridView1.DataSource = dt;
+            baglanti.Close();
+        }
+    }
+}
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+---------------------------------satilanUrunler--------------------------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace hammaddeUretim
+{
+    public partial class satilanUrunler : Form
+    {
+        SqlConnection baglanti = new SqlConnection("Data Source=.; initial Catalog=ureticiVT; Integrated Security=true");
+        public satilanUrunler()
+        {
+            InitializeComponent();
+        }
+
+        private void satilanUrunler_Load(object sender, EventArgs e)
+        {
+            string sorgu = "select * from karTablosu";
+            SqlDataAdapter da = new SqlDataAdapter(sorgu, baglanti);
+            DataTable ds = new DataTable();
+            da.Fill(ds);
+            dataGridView1.DataSource = ds;
+        }
+    }
+}
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------sepet-----------------------------------------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace hammaddeUretim
+{
+    public partial class sepet : Form
+    {
+        public sepet()
+        {
+            InitializeComponent();
+        }
+        SqlConnection baglanti = new SqlConnection("Data Source=.; initial Catalog=ureticiVT; Integrated Security=true");
+        SqlCommand komut = new SqlCommand();
+        SqlDataReader oku;
+        
+      
+        private void sepet_Load(object sender, EventArgs e)
+        {          
+           sepetDoldur();
+            sepetDoldur2();
+
+
+            komut.Connection = baglanti;
+            baglanti.Open();
+            komut.CommandText = "select sum(alisMaliyeti) from sepet";
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                label4.Text = oku[0].ToString();
+            }
+            oku.Close();
+            baglanti.Close();
+
+        }
+
+
+        public void sepetDoldur()
+        {
+
+            string sorgu = "SELECT firmaAdi,sehir,hammaddeAdi,alisMaliyeti,stokDurumu FROM firma INNER JOIN hammadde ON firma.firmaID = hammadde.firmaID INNER JOIN sepet ON hammadde.hammaddeID = sepet.hammaddeID";
+            SqlDataAdapter da = new SqlDataAdapter(sorgu, baglanti);
+            DataTable ds = new DataTable();
+            da.Fill(ds);
+            dataGridView1.DataSource = ds;
+        }
+       
+        public void sepetDoldur2()
+        {
+
+            string sorgu = "SELECT stokHammaddeAdi,stokHammaddeMiktari,topAlisFiyati,ortalamaAlisFiyati from ureticiStok";
+            SqlDataAdapter da = new SqlDataAdapter(sorgu, baglanti);   
+            DataTable ds = new DataTable();
+            da.Fill(ds);
+            dataGridView2.DataSource = ds;
+        }
+
+
+     
+    }
+}
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------uretici---------------------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+using System.Collections;
+
+namespace hammaddeUretim
+{
+    public partial class uretici : Form
+    {
+        public uretici()
+        {
+            InitializeComponent();
+        }
+        SqlConnection baglanti = new SqlConnection("Data Source=.; initial Catalog=ureticiVT; Integrated Security=true");
+        SqlCommand komut = new SqlCommand();
+        SqlCommand komut2 = new SqlCommand();
+        SqlDataReader oku;
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SqlDataAdapter da;
+            if (comboBox1.Text == "Hepsi" && comboBox2.Text == "Hepsi")
+            {
+                da = new SqlDataAdapter("select firmaAdi,ulke,sehir,hammaddeAdi,hammaddeMiktari,uretimTarihi,rafOmru,satisFiyati from firma inner join hammadde on firma.firmaID=hammadde.firmaID where hammaddeMiktari > 0 order by satisFiyati ", baglanti);
+            }
+            else if (comboBox1.Text == "Hepsi" && comboBox2.Text != "Hepsi")
+            {
+                da = new SqlDataAdapter("select firmaAdi,ulke,sehir,hammaddeAdi,hammaddeMiktari,uretimTarihi,rafOmru,satisFiyati from firma inner join hammadde on firma.firmaID=hammadde.firmaID where  hammaddeAdi in('" + comboBox2.Text + "') and hammaddeMiktari > 0 order by satisFiyati  ", baglanti);
+            }
+            else if (comboBox1.Text != "Hepsi" && comboBox2.Text == "Hepsi")
+            {
+                da = new SqlDataAdapter("select firmaAdi,ulke,sehir,hammaddeAdi,hammaddeMiktari,uretimTarihi,rafOmru,satisFiyati from firma inner join hammadde on firma.firmaID=hammadde.firmaID where  firmaAdi in('" + comboBox1.Text + "') and hammaddeMiktari > 0 order by satisFiyati  ", baglanti);
+            }
+            else
+            {
+                da = new SqlDataAdapter("select firmaAdi,ulke,sehir,hammaddeAdi,hammaddeMiktari,uretimTarihi,rafOmru,satisFiyati from firma inner join hammadde on firma.firmaID=hammadde.firmaID where firmaAdi in('" + comboBox1.Text + "') and hammaddeAdi in('" + comboBox2.Text + "') and hammaddeMiktari > 0 order by satisFiyati  ", baglanti);
+            }
+
+
+
+
+            DataTable dt = new DataTable();
+            baglanti.Open();
+            da.Fill(dt);
+            dataGridView1.DataSource = dt;
+            baglanti.Close();
+        }
+
+        private void uretici_Load(object sender, EventArgs e)
+        {
+            doldur();
+            this.Height = 374;
+
+            komut.Connection = baglanti;
+            komut2.Connection = baglanti;
+            baglanti.Open();
+            komut.CommandText = "select distinct firmaAdi from firma";
+            komut2.CommandText = "select distinct hammaddeAdi from hammadde";
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                comboBox1.Items.Add(oku[0].ToString());
+            }
+            oku.Close();
+            oku = komut2.ExecuteReader();
+            while (oku.Read())
+            {
+                comboBox2.Items.Add(oku[0].ToString());
+            }
+            baglanti.Close();
+
+            comboBox1.SelectedIndex = 0;
+            comboBox2.SelectedIndex = 0;
+
+        }
+
+        hammaddeAlis hammaddeAl = new hammaddeAlis();
+        public static string id;
+        public static string tempFirmaid;
+        public static string temphammaddeSatis;
+        public static string tempUlke;
+        public static string kargoFiyati;
+        public static string stokHammaddeMiktari;
+        public static string geciciHammaddeAdi;
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            
+            hammaddeAl = new hammaddeAlis();
+            hammaddeAl.Show();
+            string tempFirmaAdi = dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[0].Value.ToString();
+            string temphammaddeAdi = dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells[3].Value.ToString();
+            geciciHammaddeAdi = temphammaddeAdi;
+   
+            baglanti.Open();
+            komut.Connection = baglanti;        
+            komut.CommandText = "select hammaddeID from hammadde inner join firma on hammadde.firmaID=firma.firmaID  where firmaAdi in ('" + tempFirmaAdi + "') and hammaddeAdi in ('" + temphammaddeAdi + "') ";   
+
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                id = oku[0].ToString();
+            }
+            oku.Close();
+            baglanti.Close();
+
+            baglanti.Open();
+            komut2.Connection = baglanti;
+            komut2.CommandText = "select firma.firmaID from firma inner join hammadde on hammadde.firmaID=firma.firmaID  where firmaAdi in ('" + tempFirmaAdi + "') ";
+            oku = komut2.ExecuteReader();
+            while (oku.Read())
+            {
+                tempFirmaid = oku[0].ToString();
+            }
+            oku.Close();
+            baglanti.Close();
+
+
+
+            baglanti.Open();
+            komut.Connection = baglanti;
+            komut.CommandText = "select hammadde.satisFiyati from hammadde inner join firma on hammadde.firmaID=firma.firmaID  where firmaAdi in ('" + tempFirmaAdi + "') and hammaddeAdi in ('" + temphammaddeAdi + "') ";
+
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                temphammaddeSatis = oku[0].ToString();
+            }
+            oku.Close();
+            baglanti.Close();
+
+
+            baglanti.Open();
+            komut.Connection = baglanti;
+            komut.CommandText = "select firma.ulke from firma inner join hammadde on hammadde.firmaID=firma.firmaID  where firmaAdi in ('" + tempFirmaAdi + "') and hammaddeAdi in ('" + temphammaddeAdi + "') ";
+
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                tempUlke = oku[0].ToString();
+            }
+            oku.Close();
+            baglanti.Close();
+
+
+            baglanti.Open();
+            komut.Connection = baglanti;
+            komut.CommandText = "select kargo.kargoFiyat from kargo inner join firma on kargo.kargoID=firma.kargoID  where ulke in ('" + tempUlke + "') ";
+
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                kargoFiyati = oku[0].ToString();
+            }
+            oku.Close();
+            baglanti.Close();
+
+
+            baglanti.Open();
+            komut.Connection = baglanti;
+            komut.CommandText = "select hammadde.hammaddeMiktari from hammadde inner join firma on hammadde.firmaID=firma.firmaID  where firmaAdi in ('" + tempFirmaAdi + "') ";
+
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                stokHammaddeMiktari = oku[0].ToString();
+            }
+            oku.Close();
+            baglanti.Close();
+          
+
+        }
+        sepet sayfaSepet;
+        private void button2_Click(object sender, EventArgs e)
+        {
+            sayfaSepet = new sepet();
+            sayfaSepet.Show();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            this.Height = 731;
+            button7.Visible = true;
+            button6.Visible = false;
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            this.Height = 374;
+            button7.Visible = false;
+            button6.Visible = true;
+        }
+
+        int textDoldur = 0;
+        int sayac = 0;
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+            ArrayList ortFiyat = new ArrayList();
+
+            ArrayList bilesenKont = new ArrayList();
+            ArrayList harf = new ArrayList();
+            ArrayList sayi = new ArrayList();
+            ArrayList veriTabani = new ArrayList();
+
+            ArrayList deger = new ArrayList();
+            ArrayList karakter = new ArrayList();
+            ArrayList gec = new ArrayList();
+            ArrayList hamisimleri = new ArrayList();
+            ArrayList deger2 = new ArrayList();
+            ArrayList miktar = new ArrayList();
+
+            string bilesen;
+            bilesen = textBox2.Text;
+
+            baglanti.Open();
+            komut.Connection = baglanti;
+            komut.CommandText = "select stokHammaddeAdi from ureticiStok ";
+
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                bilesenKont.Add(oku[0].ToString());
+
+            }
+            oku.Close();
+            baglanti.Close();
+
+            for (int i = 0; i < bilesenKont.ToArray().Length; i++)
+            {
+                string tmpdeger = (string)bilesenKont[i];
+                veriTabani.Add(tmpdeger[0]);
+            }
+
+
+           
+            int a = 0, b = 0;
+            try
+            {
+                if (!Char.IsNumber(bilesen[0]))
+                {
+                    for (int i = 0; i < bilesen.Length; i++)
+                    {
+                        if (!Char.IsNumber(bilesen[i]))
+                        {
+                            a++;
+                            harf.Add(bilesen[i]);
+                            if (a == 2 && b == 0) { sayi.Add("1"); b = 0; }
+
+                        }
+                        else
+                        {
+                            b++;
+                            int sy = i; string tmp = "";
+                            while (Char.IsNumber(bilesen[sy]))
+                            {
+                                tmp += bilesen[sy]; sy++;
+                                if (sy >= bilesen.Length) break;
+                            }
+                            i = sy - 1;
+                            sayi.Add(tmp);
+                        }
+                    }
+                    if (harf.ToArray().Length != sayi.ToArray().Length)
+                        sayi.Add("1");
+
+                }
+                else
+                {
+                    MessageBox.Show("Bileþen ismini yanlýþ girdiniz! Kontrol ediniz.");
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("Hata: Bileþenler Girilmemiþ !!", ex.Message);
+            }
+
+         
+
+            for (int i = 0; i < harf.ToArray().Length; i++)
+            {
+                if (veriTabani.IndexOf(harf[i]) != -1)
+                {
+
+                    karakter.Add(harf[i]);
+                    gec.Add(i);
+                    deger.Add(sayi[i]);
+
+                }
+            }
+
+
+            try
+            {
+                for (int i = 0; i < bilesenKont.ToArray().Length; i++)
+                {
+                    string s = (string)bilesenKont[i];
+                    for (int j = 0; j < karakter.ToArray().Length; j++)
+                    {
+
+                        if (s[0].ToString() == karakter[j].ToString())
+                        {
+                            hamisimleri.Add(bilesenKont[i]);
+                            deger2.Add(deger[Convert.ToInt32(gec[j])]);
+
+                        }
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("Hata:", ex.Message);
+            }
+
+            baglanti.Open();
+            for (int i = 0; i < hamisimleri.ToArray().Length; i++)
+            {
+
+                komut.Connection = baglanti;
+                komut.CommandText = "select stokHammaddeMiktari,ortalamaAlisFiyati from ureticiStok where stokHammaddeAdi= '" + hamisimleri[i].ToString() + "' ";
+
+                oku = komut.ExecuteReader();
+                while (oku.Read())
+                {
+                    miktar.Add(oku[0].ToString());
+                    ortFiyat.Add(oku[1].ToString());
+
+                }
+                oku.Close();
+
+            }
+            baglanti.Close();
+
+
+            baglanti.Open();
+            
+                for (int i = 0; i < hamisimleri.ToArray().Length; i++)
+                { 
+               if(harf.ToArray().Length == karakter.ToArray().Length)
+               {
+                    string sorgu = "Update ureticiStok set stokHammaddeMiktari=@1 where stokHammaddeAdi= '" + hamisimleri[i].ToString() + "'  ";
+
+                    if (Convert.ToInt32(miktar[i]) >= Convert.ToInt32(deger2[i]))
+                    {
+                        komut = new SqlCommand(sorgu, baglanti);
+                        komut.Parameters.AddWithValue("@1", Convert.ToInt32(miktar[i]) - Convert.ToInt32(deger2[i]));
+                        komut.ExecuteNonQuery();
+                        sayac++;
+                    }
+                    else { MessageBox.Show("Yeterli hammaddeniz yok Lütfen Satýn Alýn!! "); break; }
+                }
+             
+                   
+
+                }
+                       
+            baglanti.Close();
+
+            baglanti.Open();
+            if(sayac != 0)
+            {
+                if (textBox1.Text != "" && textBox2.Text != "" && textBox3.Text != "" && textBox4.Text != "" && textBox5.Text != "" && textBox6.Text != "" && textBox7.Text != "")
+                {
+                    if (harf.ToArray().Length == karakter.ToArray().Length)
+                    {
+
+                        try
+                        {
+
+                            string sorgu = "INSERT INTO uretilenUrunler(urunAdi,bilesenleri,uretimTarihi,rafOmru,iscilikMaliyeti,topMaliyet,satisFiyati) values (@1,@2,@3,@4,@5,@6,@7)";
+                            komut = new SqlCommand(sorgu, baglanti);
+                            komut.Parameters.AddWithValue("@1", textBox1.Text);
+                            komut.Parameters.AddWithValue("@2", textBox2.Text);
+                            komut.Parameters.AddWithValue("@3", textBox3.Text);
+                            komut.Parameters.AddWithValue("@4", textBox4.Text);
+                            komut.Parameters.AddWithValue("@5", textBox5.Text);
+                            komut.Parameters.AddWithValue("@6", textBox6.Text);
+                            komut.Parameters.AddWithValue("@7", textBox7.Text);
+                            komut.ExecuteNonQuery();
+                            doldur();
+                            MessageBox.Show("Kimyasal ürün Baþarýyla Gerçekleþtirildi.");
+                        }
+                        catch (Exception ex)
+                        {
+
+                            MessageBox.Show("Hata !" + ex.Message);
+                        }
+                    }
+                    else MessageBox.Show("Böyle bi hammaddeniz yok!! üretim gerçekleþtirilemiyor.");
+
+                }
+                else MessageBox.Show("Boþ geçilmemesi gereken alanlar var!! Kontrol ediniz.");
+            }
+           
+
+            baglanti.Close();
+
+        }
+
+        void doldur()
+        {
+
+            string sorgu = "select * from uretilenUrunler";
+            SqlDataAdapter da = new SqlDataAdapter(sorgu, baglanti);
+            DataTable ds = new DataTable();
+            da.Fill(ds);
+            dataGridView2.DataSource = ds;
+        }
+    
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            textBox2.Text = textBox2.Text.ToUpper();
+            textBox2.SelectionStart = textBox2.Text.Length;
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+        
+            
+        }
+
+        private void textBox6_MouseClick(object sender, MouseEventArgs e)
+        {
+            ArrayList ortFiyat = new ArrayList();
+
+            ArrayList bilesenKont = new ArrayList();
+            ArrayList harf = new ArrayList();
+            ArrayList sayi = new ArrayList();
+            ArrayList veriTabani = new ArrayList();
+
+            ArrayList deger = new ArrayList();
+            ArrayList karakter = new ArrayList();
+            ArrayList gec = new ArrayList();
+            ArrayList hamisimleri = new ArrayList();
+            ArrayList deger2 = new ArrayList();
+            ArrayList miktar = new ArrayList();
+
+            string bilesen;
+            bilesen = textBox2.Text;
+
+            baglanti.Open();
+            komut.Connection = baglanti;
+            komut.CommandText = "select stokHammaddeAdi from ureticiStok ";
+
+            oku = komut.ExecuteReader();
+            while (oku.Read())
+            {
+                bilesenKont.Add(oku[0].ToString());
+
+            }
+            oku.Close();
+            baglanti.Close();
+
+            for (int i = 0; i < bilesenKont.ToArray().Length; i++)
+            {
+                string tmpdeger = (string)bilesenKont[i];
+                veriTabani.Add(tmpdeger[0]);
+            }
+
+
+            bilesen = textBox2.Text;
+            int a = 0, b = 0;
+            if (!Char.IsNumber(bilesen[0]))
+            {
+                for (int i = 0; i < bilesen.Length; i++)
+                {
+                    if (!Char.IsNumber(bilesen[i]))
+                    {
+                        a++;
+                        harf.Add(bilesen[i]);
+                        if (a == 2 && b == 0) { sayi.Add("1"); b = 0; }
+
+                    }
+                    else
+                    {
+                        b++;
+                        int sy = i; string tmp = "";
+                        while (Char.IsNumber(bilesen[sy]))
+                        {
+                            tmp += bilesen[sy]; sy++;
+                            if (sy >= bilesen.Length) break;
+                        }
+                        i = sy - 1;
+                        sayi.Add(tmp);
+                    }
+                }
+                if (harf.ToArray().Length != sayi.ToArray().Length)
+                    sayi.Add("1");
+
+            }
+            else
+            {
+                MessageBox.Show("Bileþen ismini yanlýþ girdiniz! Kontrol ediniz.");
+            }
+
+
+            for (int i = 0; i < harf.ToArray().Length; i++)
+            {
+                if (veriTabani.IndexOf(harf[i]) != -1)
+                {
+
+                    karakter.Add(harf[i]);
+                    gec.Add(i);
+                    deger.Add(sayi[i]);
+
+                }
+            }
+
+
+            try
+            {
+                for (int i = 0; i < bilesenKont.ToArray().Length; i++)
+                {
+                    string s = (string)bilesenKont[i];
+                    for (int j = 0; j < karakter.ToArray().Length; j++)
+                    {
+
+                        if (s[0].ToString() == karakter[j].ToString())
+                        {
+                            hamisimleri.Add(bilesenKont[i]);
+                            deger2.Add(deger[Convert.ToInt32(gec[j])]);
+
+                        }
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("Hata:", ex.Message);
+            }
+
+            baglanti.Open();
+            for (int i = 0; i < hamisimleri.ToArray().Length; i++)
+            {
+
+                komut.Connection = baglanti;
+                komut.CommandText = "select stokHammaddeMiktari,ortalamaAlisFiyati from ureticiStok where stokHammaddeAdi= '" + hamisimleri[i].ToString() + "' ";
+
+                oku = komut.ExecuteReader();
+                while (oku.Read())
+                {
+                    miktar.Add(oku[0].ToString());
+                    ortFiyat.Add(oku[1].ToString());
+
+                }
+                oku.Close();
+
+            }
+            baglanti.Close();
+
+            for (int i = 0; i < deger2.ToArray().Length; i++)
+            {
+                textDoldur += Convert.ToInt32(Convert.ToInt32(ortFiyat[i]) * Convert.ToInt32(deger2[i]));
+            }
+            textDoldur += Convert.ToInt32(textBox5.Text);
+
+
+            textBox6.Text = textDoldur.ToString();
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            textBox7.Text = (textDoldur + ((textDoldur * 20) / 100)).ToString();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            textBox1.Text = textBox1.Text.ToUpper();
+            textBox1.SelectionStart = textBox1.Text.Length;
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = "";
+            textBox2.Text = "";
+            textBox3.Text = "";
+            textBox4.Text = "";
+            textBox5.Text = "";
+            textBox6.Text = "";
+            textBox7.Text = "";
+
+            textDoldur = 0;
+        }
+        satilanUrunler kar = new satilanUrunler();
+        private void button5_Click(object sender, EventArgs e)
+        {
+            kar = new satilanUrunler();
+            kar.Show();
+        }
+    }
+}
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------

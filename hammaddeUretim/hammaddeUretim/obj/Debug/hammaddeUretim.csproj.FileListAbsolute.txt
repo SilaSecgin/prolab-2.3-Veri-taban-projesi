@@ -1,0 +1,33 @@
+c:\users\ferhat\documents\visual studio 2015\Projects\hammaddeUretim\hammaddeUretim\bin\Debug\hammaddeUretim.exe.config
+C:\Users\ferhat\documents\visual studio 2015\Projects\hammaddeUretim\hammaddeUretim\bin\Debug\hammaddeUretim.exe
+C:\Users\ferhat\documents\visual studio 2015\Projects\hammaddeUretim\hammaddeUretim\bin\Debug\hammaddeUretim.pdb
+C:\Users\ferhat\documents\visual studio 2015\Projects\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.csprojResolveAssemblyReference.cache
+C:\Users\ferhat\documents\visual studio 2015\Projects\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.firmaEkle.resources
+C:\Users\ferhat\documents\visual studio 2015\Projects\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.Form1.resources
+C:\Users\ferhat\documents\visual studio 2015\Projects\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.Properties.Resources.resources
+C:\Users\ferhat\documents\visual studio 2015\Projects\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.csproj.GenerateResource.Cache
+C:\Users\ferhat\documents\visual studio 2015\Projects\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.exe
+C:\Users\ferhat\documents\visual studio 2015\Projects\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.pdb
+C:\Users\ferhat\documents\visual studio 2015\Projects\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.Anasayfa.resources
+C:\Users\ferhat\Documents\Visual Studio 2015\Projects\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.uretici.resources
+C:\Users\ferhat\Documents\Visual Studio 2015\Projects\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.hammaddeAlis.resources
+C:\Users\ferhat\Documents\Visual Studio 2015\Projects\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.sepet.resources
+C:\Users\ferhat\Documents\Visual Studio 2015\Projects\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.musteri.resources
+C:\Users\ferhat\Documents\Visual Studio 2015\Projects\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.satilanUrunler.resources
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\bin\Debug\hammaddeUretim.exe.config
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\bin\Debug\hammaddeUretim.exe
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\bin\Debug\hammaddeUretim.pdb
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.csprojAssemblyReference.cache
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.Anasayfa.resources
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.firmaEkle.resources
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.Form1.resources
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.hammaddeAlis.resources
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.musteri.resources
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.Properties.Resources.resources
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.satilanUrunler.resources
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.sepet.resources
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.uretici.resources
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.csproj.GenerateResource.cache
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.csproj.CoreCompileInputs.cache
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.exe
+C:\Users\lenovo\Desktop\PROLAB3\hammaddeUretim\hammaddeUretim\obj\Debug\hammaddeUretim.pdb
